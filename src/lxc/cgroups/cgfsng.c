@@ -395,7 +395,7 @@ static bool cg_legacy_filter_and_set_cpus(char *path, bool am_initialized)
 	}
 	oldv = *lastslash;
 	*lastslash = '\0';
-	fpath = must_make_path(path, "cpuset.cpus", NULL);
+	fpath = must_make_path(path, "cpus", NULL);
 	posscpus = read_file(fpath);
 	if (!posscpus) {
 		SYSERROR("Failed to read file \"%s\"", fpath);
@@ -412,7 +412,7 @@ static bool cg_legacy_filter_and_set_cpus(char *path, bool am_initialized)
 		DEBUG("The path \""__ISOL_CPUS"\" to read isolated cpus from does not exist");
 		cpulist = posscpus;
 		/* No isolated cpus but we weren't already initialized by
-		 * someone. We should simply copy the parents cpuset.cpus
+		 * someone. We should simply copy the parents cpus
 		 * values.
 		 */
 		if (!am_initialized) {
@@ -434,7 +434,7 @@ static bool cg_legacy_filter_and_set_cpus(char *path, bool am_initialized)
 		TRACE("No isolated cpus detected");
 		cpulist = posscpus;
 		/* No isolated cpus but we weren't already initialized by
-		 * someone. We should simply copy the parents cpuset.cpus
+		 * someone. We should simply copy the parents cpus
 		 * values.
 		 */
 		if (!am_initialized) {
@@ -491,7 +491,7 @@ static bool cg_legacy_filter_and_set_cpus(char *path, bool am_initialized)
 copy_parent:
 	*lastslash = oldv;
 	free(fpath);
-	fpath = must_make_path(path, "cpuset.cpus", NULL);
+	fpath = must_make_path(path, "cpus", NULL);
 	ret = lxc_write_to_file(fpath, cpulist, strlen(cpulist), false, 0666);
 	if (ret < 0) {
 		SYSERROR("Failed to write cpu list to \"%s\"", fpath);
@@ -607,7 +607,7 @@ static bool cg_legacy_handle_cpuset_hierarchy(struct hierarchy *h, char *cgname)
 		return false;
 	}
 
-	/* Make sure any isolated cpus are removed from cpuset.cpus. */
+	/* Make sure any isolated cpus are removed from cpus. */
 	if (!cg_legacy_filter_and_set_cpus(cgpath, v == '1')) {
 		SYSERROR("Failed to remove isolated cpus");
 		free(clonechildrenpath);
@@ -624,8 +624,8 @@ static bool cg_legacy_handle_cpuset_hierarchy(struct hierarchy *h, char *cgname)
 	}
 
 	/* copy parent's settings */
-	if (!copy_parent_file(cgpath, "cpuset.mems")) {
-		SYSERROR("Failed to copy \"cpuset.mems\" settings");
+	if (!copy_parent_file(cgpath, "mems")) {
+		SYSERROR("Failed to copy \"mems\" settings");
 		free(cgpath);
 		free(clonechildrenpath);
 		return false;
@@ -743,7 +743,7 @@ static char **cg_hybrid_get_controllers(char **klist, char **nlist, char *line,
 	 * verify /sys/fs/cgroup/ in this field.
 	 */
 	if (strncmp(p, "/sys/fs/cgroup/", 15) != 0) {
-		ERROR("Found hierarchy not under /sys/fs/cgroup: \"%s\"", p);
+		WARN("Found hierarchy not under /sys/fs/cgroup: \"%s\"", p);
 		return NULL;
 	}
 

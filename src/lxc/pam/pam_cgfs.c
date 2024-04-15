@@ -1749,7 +1749,7 @@ static bool cg_filter_and_set_cpus(char *path, bool am_initialized)
 	oldv = *lastslash;
 	*lastslash = '\0';
 
-	fpath = must_make_path(path, "cpuset.cpus", NULL);
+	fpath = must_make_path(path, "cpus", NULL);
 	posscpus = read_file(fpath);
 	if (!posscpus) {
 		pam_cgfs_debug("Could not read file: %s\n", fpath);
@@ -1767,7 +1767,7 @@ static bool cg_filter_and_set_cpus(char *path, bool am_initialized)
 		cpulist = posscpus;
 
 		/* No isolated cpus but we weren't already initialized by
-		 * someone. We should simply copy the parents cpuset.cpus
+		 * someone. We should simply copy the parents cpus
 		 * values.
 		 */
 		if (!am_initialized) {
@@ -1792,7 +1792,7 @@ static bool cg_filter_and_set_cpus(char *path, bool am_initialized)
 		cpulist = posscpus;
 
 		/* No isolated cpus but we weren't already initialized by
-		 * someone. We should simply copy the parents cpuset.cpus
+		 * someone. We should simply copy the parents cpus.
 		 * values.
 		 */
 		if (!am_initialized) {
@@ -1851,7 +1851,7 @@ copy_parent:
 
 	free(fpath);
 
-	fpath = must_make_path(path, "cpuset.cpus", NULL);
+	fpath = must_make_path(path, "cpus", NULL);
 	ret = lxc_write_to_file(fpath, cpulist, strlen(cpulist), false, 0660);
 	if (ret < 0) {
 		pam_cgfs_debug("Could not write cpu list to: %s\n", fpath);
@@ -2020,8 +2020,8 @@ static bool cgv1_handle_cpuset_hierarchy(struct cgv1_hierarchy *h,
 	}
 
 	/* copy parent's settings */
-	if (!cg_copy_parent_file(cgpath, "cpuset.mems")) {
-		pam_cgfs_debug("%s", "Failed to copy \"cpuset.mems\" settings\n");
+	if (!cg_copy_parent_file(cgpath, "mems")) {
+		pam_cgfs_debug("%s", "Failed to copy \"mems\" settings\n");
 		free(cgpath);
 		free(clonechildrenpath);
 		return false;
